@@ -14,7 +14,9 @@ class PostController extends Controller
      */
     public function index()
     {
-        dd(Post::all());
+        $posts = Post::all();
+
+        return view('posts.index', ['posts' => $posts]);
     }
 
     /**
@@ -24,7 +26,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
+        return view('posts.create');
     }
 
     /**
@@ -33,9 +35,22 @@ class PostController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store()
     {
-        //
+        //Validate - required fields 
+        request()->validate([
+            'title' => 'required',
+            'content' => 'required'
+        ]);
+
+        //Creates new post
+        Post::create([
+            'title' => request('title'),
+            'content' => request('content')
+        ]);
+
+        //then redirect to posts page
+        return redirect('/posts');
     }
 
     /**
@@ -57,7 +72,7 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        //
+        return view('posts.edit', ['post' => $post]);
     }
 
     /**
@@ -67,9 +82,22 @@ class PostController extends Controller
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Post $post)
+    public function update(Post $post)
     {
-        //
+         //Validate - required fields 
+         request()->validate([
+             'title' => 'required',
+             'content' => 'required'
+         ]);
+        
+        //Updates to the DB
+        $post->update([
+            'title' => request('title'),
+            'content' => request('content')
+        ]);
+
+        // redirects back to url/posts after submitting update.
+        return redirect('/posts');
     }
 
     /**
@@ -80,6 +108,7 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        //
+        $post->delete();
+        return redirect('/posts');
     }
 }
